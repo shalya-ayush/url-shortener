@@ -77,4 +77,13 @@ def get_url_info(secret_key: str,
     else:
         raise_not_found(request)
 
-
+@app.delete("/admin/{secret_key}", name="administration_deactivate", response_model=schemas.URLInfo)
+def delete_url(secret_key: str,
+                request: Request,
+                db: Session = Depends(get_db)):
+    
+    if db_url:= crud.deactivate_db_url_by_secret_key(db, secret_key):
+        message = f"Successfully deleted shortened URL for '{db_url.target_url}'"
+        return {"detail": message}
+    else:
+        raise_not_found(request)
